@@ -145,7 +145,7 @@ _ATTR_ORDER = [
 ]
 
 
-def build_element(orig_elem, new_name: str) -> ET.Element:
+def build_element(orig_elem, new_name: str, second_part: str) -> ET.Element:
     """
     Create a new XML element in JOSM upload format from *orig_elem*,
     replacing the `name` tag value with *new_name*.
@@ -197,6 +197,10 @@ def build_element(orig_elem, new_name: str) -> ET.Element:
     # Add a new tag with the original name
     original_name_tag = ET.SubElement(new_elem, 'tag', {'k': 'note:original_name', 'v': original_name})
     original_name_tag.tail = '\n    '
+
+    # Add a new tag with the name in the second part (for easier review)
+    second_part_tag = ET.SubElement(new_elem, 'tag', {'k': 'note:second_part', 'v': second_part})
+    second_part_tag.tail = '\n    '
 
     # Trim trailing whitespace on last child
     children = list(new_elem)
@@ -295,7 +299,7 @@ def process(input_path: str, places_path: str, out_osm: str, out_csv: str) -> No
         lat, lon = get_center(elem)
 
         # Build changeset element
-        new_elem = build_element(elem, left)
+        new_elem = build_element(elem, left, right)
         changeset_elements.append(new_elem)
 
         # Place matching
